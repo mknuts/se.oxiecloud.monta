@@ -1,6 +1,30 @@
 {
   "error": {
     "no_cable": "Kan inte starta: Ingen kabel ansluten!",
-    "charger_not_available": "Kan inte starta: Laddboxen är inte tillgänglig."
+    "charger_not_available": "Kan inte starta: Laddboxen är inte tillgänglig.",
+    "api_error_start": "Kunde inte starta laddning via Monta.",
+    "api_error_stop": "Kunde inte stoppa laddning via Monta.",
+    "no_charge_id": "Hittade inget aktivt laddnings-ID.",
+    "missing_settings_pair": "Inloggningsuppgifter saknas! Gå till App-inställningar och logga in först.",
+    "no_data_received": "Ingen data mottogs från Monta.",
+    "api_connection_failed": "Kunde inte ansluta till Monta. Kontrollera dina inställningar."
+  },
+  "pair": {
+    "list_devices": {
+      "title": "Välj din laddbox",
+      "body": "Här är de laddboxar som hittades på ditt konto."
+    }
+  },
+  "settings": {
+    "title": "Monta inställningar",
+    "subtitle": "Ange dina API-uppgifter nedan.",
+    "username": "Client ID",
+    "password": "Client Secret",
+    "save": "Spara inställningar",
+    "saved": "Inställningar sparade",
+    "test": "Testa anslutning",
+    "testing": "Testar anslutning...",
+    "success": "Anslutning lyckades!",
+    "error": "Fel: "
   }
 }

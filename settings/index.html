@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
+    <style>
+        body { font-family: sans-serif; }
+        .status-msg { 
+            margin-top: 15px; 
+            padding: 10px; 
+            border-radius: 4px; 
+            display: none; 
+            font-size: 14px;
+        }
+        .success { display: block; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { display: block; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .homey-form-group { margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <header class="homey-header">
+        <h1 class="homey-title" data-i18n="settings.title">Monta</h1>
+        <p class="homey-subtitle" data-i18n="settings.subtitle">Konfigurera dina API-uppgifter</p>
+    </header>
+
+    <fieldset class="homey-form-fieldset">
+        <div class="homey-form-group">
+            <label class="homey-form-label" for="username" data-i18n="settings.username">Client ID</label>
+            <input class="homey-form-input" id="username" type="text" value="" />
+        </div>
+        <div class="homey-form-group">
+            <label class="homey-form-label" for="password" data-i18n="settings.password">Client Secret</label>
+            <input class="homey-form-input" id="password" type="password" value="" />
+        </div>
+    </fieldset>
+
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button id="save" class="homey-button-primary-full" data-i18n="settings.save">Spara</button>
+        <button id="test" class="homey-button-secondary-full" data-i18n="settings.test">Testa anslutning</button>
+    </div>
+
+    <div id="status" class="status-msg"></div>
+
+        <script type="text/javascript">
+        function onHomeyReady(Homey) {
+            // Ta bort Homey.i18n(); den finns inte i SDK:n på det sättet.
+
+            const usernameEl = document.getElementById('username');
+            const passwordEl = document.getElementById('password');
+            const statusEl = document.getElementById('status');
+            const saveBtn = document.getElementById('save');
+            const testBtn = document.getElementById('test');
+
+            // Hämta sparade inställningar
+            Homey.get('username', (err, val) => { if(val) usernameEl.value = val; });
+            Homey.get('password', (err, val) => { if(val) passwordEl.value = val; });
+
+            saveBtn.onclick = () => {
+                Homey.set('username', usernameEl.value);
+                Homey.set('password', passwordEl.value);
+                // Använd Homey.__() för att hämta översatt text i JS
+                Homey.alert(Homey.__('settings.saved'));
+            };
+
+            testBtn.onclick = () => {
+                statusEl.className = 'status-msg';
+                statusEl.innerText = Homey.__('settings.testing'); 
+                statusEl.style.display = 'block';
+
+                Homey.api('POST', '/test-connection', {
+                    username: usernameEl.value,
+                    password: passwordEl.value
+                }, (err, result) => {
+                    if (err || !result.success) {
+                        // Om result.message inte finns, visa ett standardfel
+                        const errorMsg = result ? result.message : (err ? err.message : 'Unknown');
+                        statusEl.innerText = Homey.__('settings.error') + errorMsg;
+                        statusEl.className = 'status-msg error';
+                    } else {
+                        statusEl.innerText = Homey.__('settings.success');
+                        statusEl.className = 'status-msg success';
+                    }
+                });
+            };
+
+            // Homey.ready() triggar automatiskt översättningen av alla [data-i18n] element
+            Homey.ready();
+        }
+</script>
+</body>
+</html>

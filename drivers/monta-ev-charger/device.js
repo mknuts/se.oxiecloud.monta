@@ -3,8 +3,6 @@
 const Homey = require('homey');
 const pollFrequency = 30000; // 30 seconds;
 
-let latestChargeID = null;
-
 module.exports = class MontaDevice extends Homey.Device {
 
   
@@ -15,15 +13,13 @@ module.exports = class MontaDevice extends Homey.Device {
   async onInit() {
     this.setCapabilityListeners();
     await this.setCapabilityValue('evcharger_charging', false);
-    const { username, password } = this.getSettings();
-    this.log('Monta EV Charger device initialized with ClientID:', username);
-    this.homey.app.clientId = username;
-    this.homey.app.clientSecret = password;
+    this.log('Monta EV Charger device initialized ');
+
     this.lastMeterReading = null;
     this.lastReadingTime = null;
     this.powerHistory = []; // Keep history of power measurements
     this.historyLength = 8; // How many entries to keep (8 x 30s = 4 minutes), adjust as needed
-
+    this.latestChargeID = null;
 
     // Register Condition card
     this.homey.flow.getConditionCard('is_cable_connected')
@@ -110,6 +106,9 @@ module.exports = class MontaDevice extends Homey.Device {
             return;
         }
 
+        // --- NEW: Set device as available on successful fetch ---
+        await this.setAvailable().catch(this.error);
+        // ---------------------------------------------------------------------
 
         const charges = await this.homey.app.api.montaFetch('/charges?chargePointId='+MontaID+'&page=0&perPage=1');
         if (!charges || !charges.data || charges.data.length === 0) {
@@ -118,7 +117,7 @@ module.exports = class MontaDevice extends Homey.Device {
         }
         
         //Calculate power (in Watts) based on meter readings (Monta do not provide any power data)
-        const currentMeter = charges.data[0].consumedKwh; // kWh from API
+        const currentMeter = points.lastMeterReadingKwh; // kWh from API
         const currentTime = Date.now(); // Time in milliseconds
         const isCharging = charges.data[0].state === 'charging';
         
@@ -126,7 +125,7 @@ module.exports = class MontaDevice extends Homey.Device {
         if (this.lastMeterReading !== null && this.lastReadingTime !== null) {
             // Calculate difference in kWh
             const deltaKwh = currentMeter - this.lastMeterReading;
-
+            this.log(`Delta kWh: ${deltaKwh}, Current Meter: ${currentMeter}, Last Meter: ${this.lastMeterReading}`);
             // Calculate time difference in hours (change from ms to hours)
             const deltaTimeHours = (currentTime - this.lastReadingTime) / (1000 * 60 * 60);
             //  If car does not charge or deltaKwh is zero or negative, set power to 0
@@ -136,7 +135,7 @@ module.exports = class MontaDevice extends Homey.Device {
                 await this.setCapabilityValue('measure_power', 0);
                 this.log('Charging not active , setting power to 0W');
             }
-            else if (deltaKwh > 0 && deltaTimeHours > 0 ) {
+            else if (deltaKwh > 0 ) {
                 // Calculate power in kW
                 const rawPowerKw = deltaKwh / deltaTimeHours;
                 let rawPowerW = Math.round(rawPowerKw * 1000);
@@ -152,13 +151,20 @@ module.exports = class MontaDevice extends Homey.Device {
                 this.log(`Power - Raw: ${rawPowerW}W, Avg: ${avgPowerW}W (History: ${this.powerHistory.length})`);
       
                 await this.setCapabilityValue('measure_power', avgPowerW);
+                this.lastMeterReading = currentMeter;
+                this.lastReadingTime = currentTime;
+            } else {
+
+                this.log('No increase in meter reading...waiting for next update.');
             }
         } else {
             // First reading, just store values
+            this.lastMeterReading = currentMeter;
+            this.lastReadingTime = currentTime;
+            
             this.log('First meter reading, storing values for next calculation.');
         }
-        this.lastMeterReading = currentMeter;
-        this.lastReadingTime = currentTime;
+
         //End calculation of power
         
         console.log('KWh meter:', points.lastMeterReadingKwh, 'Cabel connected:', points.cablePluggedIn, 'Status:', points.state);
@@ -183,6 +189,17 @@ module.exports = class MontaDevice extends Homey.Device {
 
     } catch (error) {
         console.error('Critical Error during data fetch:', error.message);
+
+        // --- NEW: Set device as unavailable on certain errors ---
+        if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+            // This sets the device as unavailable with a custom message
+            await this.setUnavailable("Ogiltiga API-uppgifter. Kontrollera App-inställningar.").catch(this.error);
+        } else if (error.message.includes('fetch') || error.message.includes('network')) {
+            await this.setUnavailable("Kunde inte nå Monta (Nätverksfel)").catch(this.error);
+        }
+        // --------------------------------------------------
+
+
         // On error, set power to 0
         // so that Homey does not show stale data
         await this.setCapabilityValue('measure_power', 0).catch(() => {});
@@ -235,7 +252,7 @@ module.exports = class MontaDevice extends Homey.Device {
         // If user tries to start (true) but cable is not connected (!isDocked)
         console.log('Aborting: No cable connected.');
         
-        // Detta felmeddelande visas för användaren i Homey-appen
+        // This error message is shown to the user in the Homey app
         throw new Error(this.homey.__('error.no_cable'));
     }
     // ---  (GUARD) ---
@@ -260,8 +277,9 @@ module.exports = class MontaDevice extends Homey.Device {
             // Call Monta API to start charging
           try {
               const startCharge = await this.homey.app.api.montaFetch('/charges', 'POST', { chargePointId: MontaID });
-              latestChargeID = startCharge.externalId; // Used to stop charging later, Monta needs externalId for this
-              console.log('Charging started:', startCharge, 'Charge ID', latestChargeID);
+              this.latestChargeID = startCharge.externalId; // Used to stop charging later, Monta needs externalId for this
+              await this.setStoreValue('latestChargeID', startCharge.externalId);
+              console.log('Charging started:', startCharge, 'Charge ID', this.latestChargeID);
           } catch (error) {
               console.log('Error when charging was started: ' + error.message);
           }
@@ -270,8 +288,19 @@ module.exports = class MontaDevice extends Homey.Device {
             // Call Monta API to stop charging
 
           try {
-              const stopCharge = await this.homey.app.api.montaFetch(`/charges/${latestChargeID}/stop`, 'POST' );
-              console.log('Charging stopped:', stopCharge);
+            
+            const chargeID = this.getStoreValue('latestChargeID');
+
+            if (!chargeID) {
+                this.error('Could not stop charging: No Charge ID found in store.');
+            return;
+    }
+
+            const stopCharge = await this.homey.app.api.montaFetch(`/charges/${chargeID}/stop`, 'POST' );
+            // Clear stored charge ID after stopping
+            await this.setStoreValue('latestChargeID', null);
+    
+            this.log('Charging stopped and ID cleared from store');
           } catch (error) {
               console.log('Error when trying to stop charging: ' + error.message);
           }

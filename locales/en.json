@@ -1,6 +1,30 @@
 {
   "error": {
     "no_cable": "Can not start: No cable connected!",
-    "charger_not_available": "Can not start: Charger not available."
+    "charger_not_available": "Can not start: Charger not available.",
+    "api_error_start": "Could not start charging via Monta.",
+    "api_error_stop": "Could not stop charging via Monta.",
+    "no_charge_id": "No active charge ID found.",
+    "missing_settings_pair": "Credentials missing! Please go to App Settings and login first.",
+    "no_data_received": "No data received from Monta.",
+    "api_connection_failed": "Failed to connect to Monta. Please check your settings."
+  },
+  "pair": {
+    "list_devices": {
+      "title": "Select your charger",
+      "body": "Here are the chargers found on your account."
+    }
+  },
+  "settings": {
+    "title": "Monta Settings",
+    "subtitle": "Enter your API credentials below.",
+    "username": "Client ID",
+    "password": "Client Secret",
+    "save": "Save settings",
+    "saved": "Settings saved",
+    "test": "Test connection",
+    "testing": "Testing connection...",
+    "success": "Connection successful!",
+    "error": "Error: "
   }
 }

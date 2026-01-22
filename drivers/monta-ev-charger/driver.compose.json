@@ -50,7 +50,8 @@
 
   },
   "energy": {
-    "evCharger": true
+    "evCharger": true,
+    "meterPowerImportedCapability": "meter_power"
   },
 
   "platforms": [
@@ -64,21 +65,6 @@
     "large": "{{driverAssetsPath}}/images/driver_large.png"
   },
   "pair": [
-    {
-      "id": "login_credentials",
-      "template": "login_credentials",
-      "options": {
-        "logo": "logo.png",
-        "title": {
-          "en": "Monta Log In (use you registered ClientID and ClientSecret)",
-          "sv": "Monta inloggning (använd ditt registrerade ClientID och ClientSecret)"
-        },
-        "usernameLabel": { "en": "Client ID" },
-        "usernamePlaceholder": { "en": "john@doe.com" },
-        "passwordLabel": { "en": "Client Secret" },
-        "passwordPlaceholder": { "en": "Password" }
-      }
-    },
     
     {
       "id": "list_devices",

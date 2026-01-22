@@ -16,72 +16,47 @@ module.exports = class MontaDriver extends Homey.Driver {
     this.log('Monta EV Charger driver has been initialized');
   }
 
-
   async onPair(session) {
-    let username = "";
-    let password = "";
+    // 1. Hämta inloggningsuppgifter från App Settings
+    const username = this.homey.settings.get('username');
+    const password = this.homey.settings.get('password');
 
-    session.setHandler("login", async (data) => {
-
-        username = data.username; //fetch from form input
-        password = data.password;
-
-    
-      console.log(`User tries to login with ClientID: ${username} and ClientSecret: ${password}`);
-      const clientId = username;
-      const clientSecret = password;
-      const credentialsAreValid = await this.homey.app.api.authenticate('https://public-api.monta.com/api/v1/auth/token', {
-        clientId,
-        clientSecret,
-      });
-      //console.log(`Login result: ${JSON.stringify(credentialsAreValid)}`);
-      
-      
-      if (credentialsAreValid.accessToken !== null) {
-        console.log('Inloggning lyckades');
-        this.homey.app.clientId = username;
-        this.homey.app.clientSecret = password;
-        return credentialsAreValid;
-      } else {
-        console.log('Inloggning misslyckades');
-        return false;
-      } 
-      
-      // return true to continue adding the device if the login succeeded
-      // return false to indicate to the user the login attempt failed
-      // thrown errors will also be shown to the user
-    
-    });
+    // 2. Kontrollera direkt om användaren har fyllt i sina uppgifter i app-inställningarna
+    if (!username || !password) {
+      // Om de saknas, visa ett tydligt felmeddelande i parningsfönstret
+      throw new Error(this.homey.__('error.missing_settings_pair'));
+    }
 
     session.setHandler("list_devices", async () => {
-      const points = await this.homey.app.api.montaFetch('/charge-points');
-      //console.log(`Found chargers: ${JSON.stringify(points)}`);
- 
- 
-      const myDevices = points.data.map(point => {
-        return {
-          id: String(point.id), // Homey wants a string here
-          name: point.name
-        };
-      });
+      this.log(`Attempting to list devices using stored App Settings for: ${username}`);
 
-      const devices = myDevices.map((myDevice) => {
-        return {
-          name: myDevice.name,
-          data: {
-            id: myDevice.id,
-          },
-          settings: {
-            // Store username & password in settings
-            // so the user can change them later
-            username,
-            password,
-          },
-        };
-      });
+      try {
+        // Vi antar att app.js redan har initierat API-klienten med dessa credentials
+        const points = await this.homey.app.api.montaFetch('/charge-points');
+        
+        if (!points || !points.data) {
+          throw new Error(this.homey.__('error.no_data_received'));
+        }
 
-      return devices;
-
+        // 3. Mappa enheterna. Notera att vi INTE sparar username/password i settings här
+        return points.data.map(point => {
+          return {
+            name: point.name || `Monta Charger (${point.id})`,
+            data: {
+              id: String(point.id),
+            },
+            settings: {
+              // We only store the charger ID in device settings
+              charger_id: String(point.id) 
+            },
+          };
+        });
+      } catch (error) {
+        this.error('Error during list_devices:', error.message);
+        throw new Error(this.homey.__('error.api_connection_failed'));
+      }
     });
   }
+
+  
 }
