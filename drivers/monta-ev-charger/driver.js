@@ -1,5 +1,5 @@
 'use strict';
-const DEBUG = false; //Use more logging
+
 const Homey = require('homey');
 let authData = {
     accessToken: null,
@@ -22,13 +22,10 @@ module.exports = class MontaDriver extends Homey.Driver {
     let password = "";
 
     session.setHandler("login", async (data) => {
-      if (!DEBUG) {
-        username = data.username;
+
+        username = data.username; //fetch from form input
         password = data.password;
-      } else {
-        username = this.homey.app.clientId;
-        password = this.homey.app.clientSecret;
-      }
+
     
       console.log(`User tries to login with ClientID: ${username} and ClientSecret: ${password}`);
       const clientId = username;
