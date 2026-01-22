@@ -1,0 +1,30 @@
+{
+  "id": "se.oxiecloud.monta",
+  "version": "0.1.0",
+  "compatibility": ">=12.4.5",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "brandColor": "#FF4136",
+  "name": {
+    "en": "Monta EV Charger",
+    "se": "Monta laddbox"
+  },
+  "description": {
+    "en": "Control your Monta connected EV Charger from Homey",
+    "se": "Styr din Monta anslutna laddbox från Homey"
+  },
+  "category": [
+    "energy"
+  ],
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/app_small.png",
+    "large": "/assets/images/app_large.png"
+  },
+  "author": {
+    "name": "Mats Knuts",
+    "email": "mats@knuts.nu"
+  }
+}

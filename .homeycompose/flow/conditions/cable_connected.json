@@ -1,0 +1,11 @@
+{
+    "id": "is_cable_connected",
+    "title": { "en": "The cable is connected", "sv": "Kabeln är ansluten" },
+    "args": [
+        {
+        "name": "device",
+        "type": "device",
+        "filter": "driver_id=monta-ev-charger"
+        }
+    ]
+}

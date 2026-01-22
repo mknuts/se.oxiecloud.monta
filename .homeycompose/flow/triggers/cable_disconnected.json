@@ -1,0 +1,11 @@
+{
+    "id": "cable_disconnected",
+    "title": { "en": "Cable became disconnected", "sv": "Kabeln kopplades ur" },
+    "args": [
+        {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=monta-ev-charger"
+        }
+    ]
+}

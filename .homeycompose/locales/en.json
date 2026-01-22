@@ -1,0 +1,6 @@
+{
+  "error": {
+    "no_cable": "Can not start: No cable connected!",
+    "charger_not_available": "Can not start: Charger not available."
+  }
+}

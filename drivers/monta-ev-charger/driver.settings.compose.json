@@ -1,0 +1,16 @@
+[
+  {
+    "id": "username",
+    "type": "text",
+    "label": { "en": "Client ID" },
+    "value": "ClientID",
+    "hint": { "en": "Your Monta registered app Client ID", "sv": "Din Monta registrerade apps Client Secret." }
+  },
+  {
+    "id": "password",
+    "type": "password",
+    "label": { "en": "Client Secret" },
+    "value": "ClientSecret",
+    "hint": { "en": "Your Monta registered app Client Secret.", "sv": "Din Monta registrerade apps Client Secret." }
+  }
+]

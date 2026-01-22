@@ -1,0 +1,11 @@
+{
+    "id": "cable_connected",
+    "title": { "en": "Cable became connected", "sv": "Kabeln anslöts" },
+    "args": [
+        {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=monta-ev-charger"
+        }
+    ]
+}

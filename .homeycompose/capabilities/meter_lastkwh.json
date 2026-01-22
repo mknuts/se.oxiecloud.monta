@@ -1,0 +1,12 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Last Charge kWh",
+    "sv": "Senaste laddning kWh"
+  },
+  "units": "kWh",
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/images/meter.svg"
+}

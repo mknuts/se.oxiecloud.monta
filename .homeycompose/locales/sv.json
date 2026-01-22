@@ -1,0 +1,6 @@
+{
+  "error": {
+    "no_cable": "Kan inte starta: Ingen kabel ansluten!",
+    "charger_not_available": "Kan inte starta: Laddboxen är inte tillgänglig."
+  }
+}
