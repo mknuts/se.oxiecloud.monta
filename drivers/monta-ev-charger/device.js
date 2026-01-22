@@ -125,6 +125,11 @@ module.exports = class MontaDevice extends Homey.Device {
         if (this.lastMeterReading !== null && this.lastReadingTime !== null) {
             // Calculate difference in kWh
             const deltaKwh = currentMeter - this.lastMeterReading;
+                if (deltaKwh < 0) {
+                    this.log('Warning: Meter value decreased. Skipping calculation to avoid power spike.');
+                    this.lastMeterReading = currentMeter; // Restore last reading to current
+                    return;
+                }
             this.log(`Delta kWh: ${deltaKwh}, Current Meter: ${currentMeter}, Last Meter: ${this.lastMeterReading}`);
             // Calculate time difference in hours (change from ms to hours)
             const deltaTimeHours = (currentTime - this.lastReadingTime) / (1000 * 60 * 60);
