@@ -3,7 +3,7 @@ module.exports = {
     try {
       const { username, password } = body;
       
-      // Vi använder API-instansen i app.js för att testa inloggningen
+      // We use the API instance to test the credentials
       const url = 'https://public-api.monta.com/api/v1/auth/token';
       const result = await homey.app.api.authenticate(url, {
         clientId: username,
@@ -14,7 +14,7 @@ module.exports = {
         return { success: true };
       }
     } catch (error) {
-      // Returnera felet så att HTML-sidan kan visa det
+      // Return error to the HTML setting page
       return { success: false, message: error.message };
     }
   },

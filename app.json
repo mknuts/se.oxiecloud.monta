@@ -9,13 +9,13 @@
     "sv": "Monta laddbox"
   },
   "description": {
-    "en": "Control your Monta connected EV Charger from Homey",
-    "sv": "Styr din Monta anslutna laddbox från Homey"
+    "en": "Monta - Your smart EV charging solution.",
+    "sv": "Monta - Din smarta lösning för elbilsladdning."
   },
   "category": [
     "energy"
   ],
-  "brandColor": "#FF4136",
+  "brandColor": "#8E1C16",
   "author": {
     "name": "Mats Knuts"
   },
@@ -216,8 +216,7 @@
           "title": {
             "en": "Charge cost",
             "sv": "Laddkostnad"
-          },
-          "units": "SEK"
+          }
         }
       },
       "energy": {
@@ -265,8 +264,8 @@
     "meter_lastkwh": {
       "type": "number",
       "title": {
-        "en": "Last Charge kWh",
-        "sv": "Senaste laddning kWh"
+        "en": "Last Charge",
+        "sv": "Senaste laddning"
       },
       "units": "kWh",
       "getable": true,

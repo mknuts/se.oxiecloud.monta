@@ -44,8 +44,7 @@
       ]
     },
     "measure_monetary": {
-      "title": { "en": "Charge cost", "sv": "Laddkostnad" },
-      "units": "SEK"
+      "title": { "en": "Charge cost", "sv": "Laddkostnad" }
     }
 
   },

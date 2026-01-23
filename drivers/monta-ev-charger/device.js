@@ -6,15 +6,32 @@ const pollFrequency = 30000; // 30 seconds;
 module.exports = class MontaDevice extends Homey.Device {
 
   
+
+
+
   
   /**
    * onInit is called when the device is initialized.
    */
   async onInit() {
+    
+ /*
+  // Lägg till detta temporärt för att "laga" befintliga enheter
+  if (!this.hasCapability('my_new_cap')) {
+    this.log('Adding missing capability...');
+    await this.addCapability('my_new_cap').catch(this.error);
+  }
+*/
+    
+    
+    
     this.setCapabilityListeners();
     await this.setCapabilityValue('evcharger_charging', false);
+    //await this.setCapabilityOptions('measure_monetary', { "units":"DKK" });
+    //await this.setCapabilityValue('charging_state', 'charging');
     this.log('Monta EV Charger device initialized ');
 
+    this.monetaryUnit = null; // To be fetched from API
     this.lastMeterReading = null;
     this.lastReadingTime = null;
     this.powerHistory = []; // Keep history of power measurements
@@ -72,7 +89,7 @@ module.exports = class MontaDevice extends Homey.Device {
    */
   async onDeleted() {
     this.stopTimer();
-    this.log('My Monta Charger has been deleted');
+    this.log('Monta Charger with id ' + this.chargePointId +' has been deleted');
   }
   
     // Trigger for cable connected/disconnected flow card
@@ -100,7 +117,6 @@ module.exports = class MontaDevice extends Homey.Device {
         const MontaID = this.getData().id;
         //console.log(`Fetch data for monta charger with ID: ${MontaID}`);
         const points = await this.homey.app.api.montaFetch('/charge-points/' + MontaID);
-       
         if (!points) {
                 this.error('No data received from API (chargepoint)');
             return;
@@ -115,7 +131,13 @@ module.exports = class MontaDevice extends Homey.Device {
             this.error('No data received from API (charges)');
             return;
         }
-        
+        // Check monetary unit from API if not already set
+        const currencyFromAPI = charges.data[0].currency.identifier;
+        if (this.monetaryUnit !== currencyFromAPI) {
+            this.monetaryUnit = currencyFromAPI;
+            await this.setCapabilityOptions('measure_monetary', { "units": this.monetaryUnit.toUpperCase(), "title": { "en": "Charge cost", "sv": "Laddkostnad" } });
+            this.log('Updated monetary unit to:', this.monetaryUnit.toUpperCase());
+        }
         //Calculate power (in Watts) based on meter readings (Monta do not provide any power data)
         const currentMeter = points.lastMeterReadingKwh; // kWh from API
         const currentTime = Date.now(); // Time in milliseconds

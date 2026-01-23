@@ -1,8 +1,8 @@
 {
   "type": "number",
   "title": {
-    "en": "Last Charge kWh",
-    "sv": "Senaste laddning kWh"
+    "en": "Last Charge",
+    "sv": "Senaste laddning"
   },
   "units": "kWh",
   "getable": true,

@@ -17,13 +17,13 @@ module.exports = class MontaDriver extends Homey.Driver {
   }
 
   async onPair(session) {
-    // 1. Hämta inloggningsuppgifter från App Settings
+    // Get credentials from app settings
     const username = this.homey.settings.get('username');
     const password = this.homey.settings.get('password');
 
-    // 2. Kontrollera direkt om användaren har fyllt i sina uppgifter i app-inställningarna
+    // Check if username and password are set
     if (!username || !password) {
-      // Om de saknas, visa ett tydligt felmeddelande i parningsfönstret
+      // If not, throw an error to inform the user
       throw new Error(this.homey.__('error.missing_settings_pair'));
     }
 
@@ -31,7 +31,7 @@ module.exports = class MontaDriver extends Homey.Driver {
       this.log(`Attempting to list devices using stored App Settings for: ${username}`);
 
       try {
-        // Vi antar att app.js redan har initierat API-klienten med dessa credentials
+        // We assume that app.js has already authenticated and stored tokens
         const points = await this.homey.app.api.montaFetch('/charge-points');
         
         if (!points || !points.data) {
