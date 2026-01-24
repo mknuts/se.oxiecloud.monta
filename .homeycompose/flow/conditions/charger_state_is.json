@@ -1,7 +1,18 @@
 {
-  "title": { "en": "The charger status is...", "sv": "Laddboxens status är..." },
+  "title": { 
+    "en": "The charger status is...", 
+    "sv": "Laddboxens status är..." 
+  },
+  "titleFormatted": { 
+    "en": "The charger status is [[status]]", 
+    "sv": "Laddboxens status är [[status]]" 
+  },
   "args": [
-    { "name": "device", "type": "device", "filter": "driver_id=monta-ev-charger" },
+    { 
+      "name": "device", 
+      "type": "device", 
+      "filter": "driver_id=monta-ev-charger" 
+    },
     {
       "name": "status",
       "type": "dropdown",

@@ -1,16 +1,20 @@
 {
   "title": { 
-    "en": "Charger state became...", 
+    "en": "Charger status became...", 
     "sv": "Laddboxens status blev..." 
   },
+  "titleFormatted": { 
+    "en": "Charger status became [[status]]", 
+    "sv": "Laddboxens status blev [[status]]" 
+  },
   "args": [
-    {
-      "name": "device",
-      "type": "device",
-      "filter": "driver_id=monta-ev-charger"
+    { 
+      "name": "device", 
+      "type": "device", 
+      "filter": "driver_id=monta-ev-charger" 
     },
     {
-      "name": "state",
+      "name": "status",
       "type": "dropdown",
       "values": [
         { "id": "available", "title": { "en": "Available", "sv": "Ledig" } },

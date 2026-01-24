@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "se.oxiecloud.monta",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "compatibility": ">=12.4.5",
   "sdk": 3,
   "name": {
@@ -82,7 +82,7 @@
             "type": "string",
             "title": {
               "en": "State",
-              "sv": "Läge"
+              "sv": "Status"
             }
           }
         ],
@@ -90,8 +90,12 @@
       },
       {
         "title": {
-          "en": "Charger state became...",
+          "en": "Charger status became...",
           "sv": "Laddboxens status blev..."
+        },
+        "titleFormatted": {
+          "en": "Charger status became [[status]]",
+          "sv": "Laddboxens status blev [[status]]"
         },
         "args": [
           {
@@ -100,7 +104,7 @@
             "filter": "driver_id=monta-ev-charger"
           },
           {
-            "name": "state",
+            "name": "status",
             "type": "dropdown",
             "values": [
               {
@@ -168,7 +172,7 @@
             "type": "string",
             "title": {
               "en": "State",
-              "sv": "Läge"
+              "sv": "Laddningsläge"
             }
           }
         ],
@@ -178,6 +182,10 @@
         "title": {
           "en": "Charging state became...",
           "sv": "Laddningsläget blev..."
+        },
+        "titleFormatted": {
+          "en": "Charging state became [[state]]",
+          "sv": "Laddningsläget blev [[state]]"
         },
         "args": [
           {
@@ -271,6 +279,10 @@
           "en": "The charger status is...",
           "sv": "Laddboxens status är..."
         },
+        "titleFormatted": {
+          "en": "The charger status is [[status]]",
+          "sv": "Laddboxens status är [[status]]"
+        },
         "args": [
           {
             "name": "device",
@@ -332,6 +344,10 @@
         "title": {
           "en": "The charging state is...",
           "sv": "Laddningsläget är..."
+        },
+        "titleFormatted": {
+          "en": "The charging state is [[state]]",
+          "sv": "Laddningsläget är [[state]]"
         },
         "args": [
           {

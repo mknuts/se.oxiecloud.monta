@@ -3,11 +3,15 @@
     "en": "Charging state became...", 
     "sv": "Laddningsläget blev..." 
   },
+  "titleFormatted": { 
+    "en": "Charging state became [[state]]", 
+    "sv": "Laddningsläget blev [[state]]" 
+  },
   "args": [
-    {
-      "name": "device",
-      "type": "device",
-      "filter": "driver_id=monta-ev-charger"
+    { 
+      "name": "device", 
+      "type": "device", 
+      "filter": "driver_id=monta-ev-charger" 
     },
     {
       "name": "state",

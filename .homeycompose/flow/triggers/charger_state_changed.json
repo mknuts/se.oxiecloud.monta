@@ -11,7 +11,7 @@
     {
       "name": "state",
       "type": "string",
-      "title": { "en": "State", "sv": "Läge" }
+      "title": { "en": "State", "sv": "Status" }
     }
   ]
 }

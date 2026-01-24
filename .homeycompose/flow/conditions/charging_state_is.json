@@ -1,13 +1,17 @@
 {
   "title": { 
     "en": "The charging state is...", 
-    "sv": "Laddningstillståndet är..." 
+    "sv": "Laddningsläget är..." 
+  },
+  "titleFormatted": { 
+    "en": "The charging state is [[state]]", 
+    "sv": "Laddningsläget är [[state]]" 
   },
   "args": [
-    {
-      "name": "device",
-      "type": "device",
-      "filter": "driver_id=monta-ev-charger"
+    { 
+      "name": "device", 
+      "type": "device", 
+      "filter": "driver_id=monta-ev-charger" 
     },
     {
       "name": "state",
