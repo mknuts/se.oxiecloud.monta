@@ -59,6 +59,27 @@ module.exports = class MontaDevice extends Homey.Device {
     this.latestChargeID = null;
 
     // Register Condition card
+    this.homey.flow.getConditionCard('charger_state_is')
+      .registerRunListener(async (args) => {
+        const currentStatus = this.getCapabilityValue('charger_state');
+        this.log(`[Condition] Checking if ${currentStatus} is ${args.status}`);
+        return currentStatus === args.status;
+      });
+
+    
+    
+    // Register Condition card
+    this.homey.flow.getConditionCard('charging_state_is')
+      .registerRunListener(async (args) => {
+        // args.device är enheten kortet körs på
+        // args.state är värdet användaren valt i dropdown-menyn
+        
+        const currentState = this.getCapabilityValue('charging_state');
+        this.log(`[Condition] Checking if ${currentState} is ${args.state}`);
+        return currentState === args.state; // Returnerar true eller false
+      });
+
+    // Register Condition card
     this.homey.flow.getConditionCard('is_cable_connected')
       .registerRunListener(async (args, state) => {
             
