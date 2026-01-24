@@ -9,8 +9,6 @@
     "evcharger_charging",
     "charging_state",
     "charger_state",
-    "ev_charging_state",
-    "evcharger_charging_state",
     "connected",
     "measure_power",
     "meter_power",

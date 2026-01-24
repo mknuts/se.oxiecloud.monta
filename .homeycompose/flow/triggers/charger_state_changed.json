@@ -1,0 +1,17 @@
+{
+  "title": { "en": "Charger state changed", "sv": "Laddboxens status ändrades" },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=monta-ev-charger"
+    }
+  ],
+  "tokens": [
+    {
+      "name": "state",
+      "type": "string",
+      "title": { "en": "State", "sv": "Läge" }
+    }
+  ]
+}

@@ -13,7 +13,7 @@ module.exports = class MontaDevice extends Homey.Device {
   /**
    * onInit is called when the device is initialized.
    */
-    async onInit() {
+  async onInit() {
         
 
     // Lägg till detta temporärt för att "laga" befintliga enheter
@@ -21,14 +21,28 @@ module.exports = class MontaDevice extends Homey.Device {
         this.log('Adding missing capability...');
         await this.addCapability('charger_state').catch(this.error);
     }
+        if (!this.hasCapability('charging_state')) {
+        this.log('Adding missing capability...');
+        await this.addCapability('charging_state').catch(this.error);
+    }
+    /*
+        if (!this.hasCapability('charger_state')) {
+        this.log('Adding missing capability...');
+        await this.addCapability('charger_state').catch(this.error);
+    }
+    */
     if (this.hasCapability('charging_mode')) {
         this.log('Removing deprecated capability charging_mode...');
         await this.removeCapability('charging_mode').catch(this.error);
-
     }
-    
-
-    
+    if (this.hasCapability('ev_charging_state')) {
+        this.log('Removing deprecated capability ev_charging_state...');
+        await this.removeCapability('ev_charging_state').catch(this.error);
+    }
+    if (this.hasCapability('evcharger_charging_state')) {
+        this.log('Removing deprecated capability evcharger_charging_state...');
+        await this.removeCapability('evcharger_charging_state').catch(this.error);
+    }
     
     
     this.setCapabilityListeners();
@@ -46,46 +60,65 @@ module.exports = class MontaDevice extends Homey.Device {
 
     // Register Condition card
     this.homey.flow.getConditionCard('is_cable_connected')
-        .registerRunListener(async (args, state) => {
+      .registerRunListener(async (args, state) => {
             
-            //Fetch current capability status
-            const isConnected = this.getCapabilityValue('connected');
+        //Fetch current capability status
+        const isConnected = this.getCapabilityValue('connected');
 
-            this.log(`Condition check: Is cable connected? ${isConnected}`);
+        this.log(`Condition check: Is cable connected? ${isConnected}`);
 
-            //Return true or false
-            return isConnected === true; 
-        });
-
+        //Return true or false
+          return isConnected === true; 
+      });
 
     this.startTimer();
+    /*
+    // --- TEMPORARY SIMULATION CODE FOR ChargingState ---
+    // List of all your enum IDs
+    const mockStates = [
+      'reserved', 'starting', 'charging', 
+      'stopping', 'paused', 'scheduled', 
+      'stopped', 'completed'
+    ];
 
-// --- TEMPORARY SIMULATION CODE ---
-// List of all your enum IDs
-const mockStates = [
-  'reserved', 'starting', 'charging', 
-  'stopping', 'paused', 'scheduled', 
-  'stopped', 'completed'
-];
+    let stateIndex = 0;
 
-let stateIndex = 0;
+    // Change state every 10 seconds
+    this.homey.setInterval(async () => {
+      const nextState = mockStates[stateIndex];
+      this.log(`[Simulation] Cycling to: ${nextState}`);
+      
+      await this.updateChargingState(nextState);
 
-// Change state every 10 seconds
-this.homey.setInterval(async () => {
-  const nextState = mockStates[stateIndex];
-  this.log(`[Simulation] Cycling to: ${nextState}`);
-  
-  await this.updateChargingState(nextState);
+      // Move to next state, or back to start
+      stateIndex = (stateIndex + 1) % mockStates.length;
+    }, 10000); 
+    // ---------------------------------
+    // --- TEMPORARY SIMULATION CODE FOR ChargerState ---
+    // List of all your enum IDs
+    const mockStates2 = [
+      'available', 'busy', 'busy-charging', 'busy-scheduled',
+      'disconnected', 'error'
+    ];
 
-  // Move to next state, or back to start
-  stateIndex = (stateIndex + 1) % mockStates.length;
-}, 10000); 
-// ---------------------------------
+    let stateIndex2 = 0;
 
+    // Change state every 10 seconds
+    this.homey.setInterval(async () => {
+      const nextState2 = mockStates2[stateIndex2];
+      this.log(`[Simulation] Cycling to: ${nextState2}`);
+      
+      await this.updateChargerState(nextState2);
 
+      // Move to next state, or back to start
+      stateIndex2 = (stateIndex2 + 1) % mockStates2.length;
+    }, 10000); 
+    // ---------------------------------
+    */
     this.log('Monta EV charger has been initialized');
   }
-
+  
+  
   /**
    * onAdded is called when the user adds the device, called just after pairing.
    */
@@ -122,58 +155,89 @@ this.homey.setInterval(async () => {
     this.log('Monta Charger with id ' + this.chargePointId +' has been deleted');
   }
   
-    // Trigger for cable connected/disconnected flow card
-    async updateCableStatus(isConnected) {
-        // Fetch old value to see if it has changed
-        const oldValue = this.getCapabilityValue('connected');
-        
-        // Update capability (for UI/app)
-        await this.setCapabilityValue('connected', isConnected);
+  // Trigger for cable connected/disconnected flow card
+  async updateCableStatus(isConnected) {
+      // Fetch old value to see if it has changed
+      const oldValue = this.getCapabilityValue('connected');
+      
+      // Update capability (for UI/app)
+      await this.setCapabilityValue('connected', isConnected);
 
-        // If changed then trigger flow
-        if (oldValue !== isConnected) {
-            const triggerId = isConnected ? 'cable_connected' : 'cable_disconnected';
-            
-            this.homey.flow.getDeviceTriggerCard(triggerId)
-                .trigger(this, {}, { device: this })
-                .then(() => this.log(`Triggered flow: ${triggerId}`))
-                .catch(this.error);
-        }
-    }
-
-/**
- * Updates the charging state and triggers flow cards dynamically.
- * @param {string} newStateId - The ID from your enum (e.g., 'charging', 'completed')
- */
-
-async updateChargingState(newStateId) {
-  try {
-    // 1. Hitta titeln för token
-    const cap = this.homey.manifest.capabilities['charging_state'];
-    const val = cap.values.find(v => v.id === newStateId);
-    const lang = this.homey.i18n.getLanguage();
-    const displayTitle = val.title[lang] || val.title['en'] || newStateId;
-
-    // 2. Uppdatera UI
-    await this.setCapabilityValue('charging_state', newStateId);
-
-    // 3. Trigga "Changed"
-    const triggerChanged = this.homey.flow.getDeviceTriggerCard('charging_state_changed');
-    if (triggerChanged) {
-      // Vi skickar 'this' som device-argumentet (det filtret letar efter)
-      await triggerChanged.trigger(this, { state: displayTitle }, { device: this });
-    }
-
-    // 4. Trigga "Is"
-    const triggerIs = this.homey.flow.getDeviceTriggerCard('charging_state_is');
-    if (triggerIs) {
-      await triggerIs.trigger(this, {}, { device: this, state: newStateId });
-    }
-
-  } catch (err) {
-    this.error('Error:', err);
+      // If changed then trigger flow
+      if (oldValue !== isConnected) {
+          const triggerId = isConnected ? 'cable_connected' : 'cable_disconnected';
+          
+          this.homey.flow.getDeviceTriggerCard(triggerId)
+              .trigger(this, {}, { device: this })
+              .then(() => this.log(`Triggered flow: ${triggerId}`))
+              .catch(this.error);
+      }
   }
-}
+
+  /**
+   * Updates the charging state and triggers flow cards dynamically.
+   * @param {string} newStateId - The ID from your enum (e.g., 'charging', 'completed')
+   */
+
+  async updateChargingState(newStateId) {
+    try {
+      // 1. Hitta titeln för token
+      const cap = this.homey.manifest.capabilities['charging_state'];
+      const val = cap.values.find(v => v.id === newStateId);
+      const lang = this.homey.i18n.getLanguage();
+      const displayTitle = val.title[lang] || val.title['en'] || newStateId;
+
+      // 2. Uppdatera UI
+      await this.setCapabilityValue('charging_state', newStateId);
+
+      // 3. Trigga "Changed"
+      const triggerChanged = this.homey.flow.getDeviceTriggerCard('charging_state_changed');
+      if (triggerChanged) {
+        // Vi skickar 'this' som device-argumentet (det filtret letar efter)
+        await triggerChanged.trigger(this, { state: displayTitle }, { device: this });
+      }
+
+      // 4. Trigga "Is"
+      const triggerIs = this.homey.flow.getDeviceTriggerCard('charging_state_is');
+      if (triggerIs) {
+        await triggerIs.trigger(this, {}, { device: this, state: newStateId });
+      }
+
+    } catch (err) {
+      this.error('Error:', err);
+    }
+  }
+
+  async updateChargerState(newStateId) {
+    try {
+      // 1. Hitta titeln för token
+      const cap = this.homey.manifest.capabilities['charger_state'];
+      const val = cap.values.find(v => v.id === newStateId);
+      const lang = this.homey.i18n.getLanguage();
+      const displayTitle = val.title[lang] || val.title['en'] || newStateId;
+
+      // 2. Uppdatera UI
+      await this.setCapabilityValue('charger_state', newStateId);
+
+      // 3. Trigga "Changed"
+      const triggerChanged = this.homey.flow.getDeviceTriggerCard('charger_state_changed');
+      if (triggerChanged) {
+        // Vi skickar 'this' som device-argumentet (det filtret letar efter)
+        await triggerChanged.trigger(this, { state: displayTitle }, { device: this });
+      }
+
+      // 4. Trigga "Is"
+      const triggerIs = this.homey.flow.getDeviceTriggerCard('charger_state_is');
+      if (triggerIs) {
+        await triggerIs.trigger(this, {}, { device: this, state: newStateId });
+      }
+
+    } catch (err) {
+      this.error('Error:', err);
+    }
+  }
+
+
 
   async fetchMontaData() {
     try {
@@ -265,10 +329,10 @@ async updateChargingState(newStateId) {
         this.setCapabilityValue('measure_monetary', charges.data[0].cost);
         this.setCapabilityValue('meter_lastkwh', charges.data[0].consumedKwh );
 
-        this.setCapabilityValue('ev_charging_state', charges.data[0].state);
-        //this.setCapabilityValue('charging_state', charges.data[0].state);
+        //this.setCapabilityValue('charger_state', charges.data[0].state);
+        this.setCapabilityValue('charging_state', charges.data[0].state);
 
-        this.setCapabilityValue('evcharger_charging_state', points.state);
+        //this.setCapabilityValue('evcharger_charging_state', points.state);
         this.setCapabilityValue('charger_state', points.state);
         if (points.state === 'busy-charging') {
           //console.log('Set evcharger_charging to TRUE');

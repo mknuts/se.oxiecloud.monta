@@ -1,0 +1,25 @@
+{
+  "title": { 
+    "en": "Charger state became...", 
+    "sv": "Laddboxens status blev..." 
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=monta-ev-charger"
+    },
+    {
+      "name": "state",
+      "type": "dropdown",
+      "values": [
+        { "id": "available", "title": { "en": "Available", "sv": "Ledig" } },
+        { "id": "busy", "title": { "en": "Busy", "sv": "Upptagen" } },
+        { "id": "busy-charging", "title": { "en": "Charging", "sv": "Laddar" } },
+        { "id": "busy-scheduled", "title": { "en": "Busy Scheduled", "sv": "Schemalagd" } },
+        { "id": "disconnected", "title": { "en": "Disconnected", "sv": "Frånkopplad" } },
+        { "id": "error", "title": { "en": "Error", "sv": "Fel" } }
+      ]
+    }
+  ]
+}
