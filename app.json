@@ -19,6 +19,10 @@
   "author": {
     "name": "Mats Knuts"
   },
+  "source": "https://github.com/mknuts/se.oxiecloud.monta",
+  "bugs": {
+    "url": "https://github.com/mknuts/se.oxiecloud.monta/issues"
+  },
   "images": {
     "small": "/assets/images/app_small.png",
     "large": "/assets/images/app_large.png"
