@@ -1,0 +1,27 @@
+{
+  "title": { 
+    "en": "Charging state became...", 
+    "sv": "Laddningsläget blev..." 
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=monta-ev-charger"
+    },
+    {
+      "name": "state",
+      "type": "dropdown",
+      "values": [
+        { "id": "reserved", "title": { "en": "Reserved", "sv": "Reserverad" } },
+        { "id": "starting", "title": { "en": "Starting", "sv": "Startar" } },
+        { "id": "charging", "title": { "en": "Charging", "sv": "Laddar" } },
+        { "id": "stopping", "title": { "en": "Stopping", "sv": "Stoppar" } },
+        { "id": "paused", "title": { "en": "Paused", "sv": "Pausad" } },
+        { "id": "scheduled", "title": { "en": "Scheduled", "sv": "Schemalagd" } },
+        { "id": "stopped", "title": { "en": "Stopped", "sv": "Stoppad" } },
+        { "id": "completed", "title": { "en": "Completed", "sv": "Genomförd" } }
+      ]
+    }
+  ]
+}

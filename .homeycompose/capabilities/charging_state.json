@@ -1,0 +1,21 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Charging Mode",
+    "sv": "Laddningstillstånd"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "sensor",
+  "icon": "/assets/images/connected.svg",
+  "values": [
+        { "id": "reserved", "title": { "en": "Reserved", "sv": "Reserverad" } },
+        { "id": "starting", "title": { "en": "Starting", "sv": "Startar" } },
+        { "id": "charging", "title": { "en": "Charging", "sv": "Laddar" } },
+        { "id": "stopping", "title": { "en": "Stopping", "sv": "Stoppar" } },
+        { "id": "paused", "title": { "en": "Paused", "sv": "Pausad" } },
+        { "id": "scheduled", "title": { "en": "Scheduled", "sv": "Schemalaggd" } },
+        { "id": "stopped", "title": { "en": "Stopped", "sv": "Stoppad" } },
+        { "id": "completed", "title": { "en": "Completed", "sv": "Genomförd" } }
+      ] 
+}
