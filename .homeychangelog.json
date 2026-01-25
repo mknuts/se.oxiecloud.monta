@@ -1,5 +1,9 @@
 {
   "1.0.0": {
-    "en": "First version!"
+    "en": "First version!",
+    "sv": "Första versionen!"
+  },
+  "1.0.1": {
+    "en": "Adjusted wrong language code"
   }
 }
