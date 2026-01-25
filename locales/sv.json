@@ -25,6 +25,8 @@
     "test": "Testa anslutning",
     "testing": "Testar anslutning...",
     "success": "Anslutning lyckades!",
-    "error": "Fel: "
+    "error": "Fel: ",
+    "instructions_title": "Instruktioner",
+    "instructions_body": "För att använda denna app behöver du ansluta din laddbox till Montas backend (anslutningen är kostnadsfri för privatägda laddare). Du måste ha de verktyg och inloggningsuppgifter som krävs för att kunna konfigurera din laddbox att ansluta till Monta. Laddboxen måste kunna ansluta till internet.\n\nFör att komma igång, ladda ner \"Monta Charge\" till din telefon och registrera ett konto. I appen väljer du \"Chargers\", trycker på de tre punkterna i övre högra hörnet, väljer \"Connect a charger\" och följer guiden. Mer information finns här: https://monta.com/en/help-center/get-started-ev-driver-home/\n\nNär din laddbox är operativ i Montas app kan du gå vidare och registrera en applikation hos Monta för att få tillgång till deras offentliga API. Vid registreringen får du ett Client ID och en Client Secret. Du behöver dessa två parametrar för att kunna använda denna app.\n\nDu registrerar din applikation här: https://portal2.monta.app/applications"
   }
 }

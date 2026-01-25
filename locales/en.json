@@ -25,6 +25,8 @@
     "test": "Test connection",
     "testing": "Testing connection...",
     "success": "Connection successful!",
-    "error": "Error: "
+    "error": "Error: ",
+    "instructions_title": "Instructions",
+    "instructions_body": "To use this app you need to connect your EV charger to Monta's backend (connection is free of charge for private owned chargers). You must have the necessary tools and credentials to be able to configure your EV charger to connect to Monta's backend. The charger must be able to connect to the Internet.\n\nTo get started, download \"Monta Charge\" to your phone and register for an account. In the app, select \"Chargers\", press the three dots in the upper right, choose \"Connect a charger\" and follow the guidelines. More information can be found here: https://monta.com/en/help-center/get-started-ev-driver-home/\n\nWhen you have your charger operational in Monta's app, you can continue and register an application with Monta to get access to their public API. When registering, you will receive a Client ID and a Client Secret. You need these two parameters to use this app.\n\nYou register your application here: https://portal2.monta.app/applications"
   }
 }
