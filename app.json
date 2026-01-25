@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "se.oxiecloud.monta",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "compatibility": ">=12.4.5",
   "sdk": 3,
   "name": {
@@ -263,8 +263,8 @@
       {
         "id": "is_cable_connected",
         "title": {
-          "en": "The cable is connected",
-          "sv": "Kabeln är ansluten"
+          "en": "The cable !{{is|isn't}} connected",
+          "sv": "Kabeln !{{är|är inte}} ansluten"
         },
         "args": [
           {
@@ -276,12 +276,12 @@
       },
       {
         "title": {
-          "en": "The charger status is...",
-          "sv": "Laddboxens status är..."
+          "en": "The charger status !{{is|isn't}}...",
+          "sv": "Laddboxens status !{{är|är inte}}..."
         },
         "titleFormatted": {
-          "en": "The charger status is [[status]]",
-          "sv": "Laddboxens status är [[status]]"
+          "en": "The charger status !{{is|isn't}} [[status]]",
+          "sv": "Laddboxens status !{{är|är inte}} [[status]]"
         },
         "args": [
           {
@@ -342,12 +342,12 @@
       },
       {
         "title": {
-          "en": "The charging state is...",
-          "sv": "Laddningsläget är..."
+          "en": "The charging state !{{is|isn't}}...",
+          "sv": "Laddningsläget !{{är|är inte}}..."
         },
         "titleFormatted": {
-          "en": "The charging state is [[state]]",
-          "sv": "Laddningsläget är [[state]]"
+          "en": "The charging state !{{is|isn't}} [[state]]",
+          "sv": "Laddningsläget !{{är|är inte}} [[state]]"
         },
         "args": [
           {
@@ -440,127 +440,14 @@
         "meter_lastkwh"
       ],
       "capabilitiesOptions": {
-        "evcharger_charging_state": {
-          "type": "enum",
-          "title": {
-            "en": "Charger State",
-            "sv": "Laddboxens status"
-          },
-          "values": [
-            {
-              "id": "available",
-              "title": {
-                "en": "Available",
-                "sv": "Ledig"
-              }
-            },
-            {
-              "id": "busy",
-              "title": {
-                "en": "Busy",
-                "sv": "Upptagen"
-              }
-            },
-            {
-              "id": "busy-charging",
-              "title": {
-                "en": "Charging",
-                "sv": "Laddar"
-              }
-            },
-            {
-              "id": "busy-scheduled",
-              "title": {
-                "en": "Busy Scheduled",
-                "sv": "Schemalagd"
-              }
-            },
-            {
-              "id": "disconnected",
-              "title": {
-                "en": "Disconnected",
-                "sv": "Frånkopplad"
-              }
-            },
-            {
-              "id": "error",
-              "title": {
-                "en": "Error",
-                "sv": "Fel"
-              }
-            }
-          ]
-        },
-        "ev_charging_state": {
-          "type": "enum",
-          "title": {
-            "en": "Charging Mode",
-            "sv": "Laddningsläge"
-          },
-          "values": [
-            {
-              "id": "reserved",
-              "title": {
-                "en": "Reserved",
-                "sv": "Reserverad"
-              }
-            },
-            {
-              "id": "starting",
-              "title": {
-                "en": "Starting",
-                "sv": "Startar"
-              }
-            },
-            {
-              "id": "charging",
-              "title": {
-                "en": "Charging",
-                "sv": "Laddar"
-              }
-            },
-            {
-              "id": "stopping",
-              "title": {
-                "en": "Stopping",
-                "sv": "Stoppar"
-              }
-            },
-            {
-              "id": "paused",
-              "title": {
-                "en": "Paused",
-                "sv": "Pausad"
-              }
-            },
-            {
-              "id": "scheduled",
-              "title": {
-                "en": "Scheduled",
-                "sv": "Schemalaggd"
-              }
-            },
-            {
-              "id": "stopped",
-              "title": {
-                "en": "Stopped",
-                "sv": "Stoppad"
-              }
-            },
-            {
-              "id": "completed",
-              "title": {
-                "en": "Completed",
-                "sv": "Genomförd"
-              }
-            }
-          ]
-        },
         "measure_monetary": {
           "title": {
             "en": "Charge cost",
             "sv": "Laddkostnad"
           }
+        },
+        "meter_power": {
+          "preventInsights": true
         }
       },
       "energy": {

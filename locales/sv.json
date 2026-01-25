@@ -7,7 +7,8 @@
     "no_charge_id": "Hittade inget aktivt laddnings-ID.",
     "missing_settings_pair": "Inloggningsuppgifter saknas! Gå till App-inställningar och logga in först.",
     "no_data_received": "Ingen data mottogs från Monta.",
-    "api_connection_failed": "Kunde inte ansluta till Monta. Kontrollera dina inställningar."
+    "api_connection_failed": "Kunde inte ansluta till Monta. Kontrollera dina inställningar.",
+    "unauthorized": "Ogiltiga API-uppgifter. Kontrollera App-inställningar."
   },
   "pair": {
     "list_devices": {

@@ -1,11 +1,11 @@
 {
   "title": { 
-    "en": "The charging state is...", 
-    "sv": "Laddningsläget är..." 
+    "en": "The charging state !{{is|isn't}}...", 
+    "sv": "Laddningsläget !{{är|är inte}}..." 
   },
   "titleFormatted": { 
-    "en": "The charging state is [[state]]", 
-    "sv": "Laddningsläget är [[state]]" 
+    "en": "The charging state !{{is|isn't}} [[state]]", 
+    "sv": "Laddningsläget !{{är|är inte}} [[state]]" 
   },
   "args": [
     { 

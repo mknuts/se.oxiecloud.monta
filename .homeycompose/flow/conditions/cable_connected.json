@@ -1,6 +1,6 @@
 {
     "id": "is_cable_connected",
-    "title": { "en": "The cable is connected", "sv": "Kabeln är ansluten" },
+    "title": { "en": "The cable !{{is|isn't}} connected", "sv": "Kabeln !{{är|är inte}} ansluten" },
     "args": [
         {
         "name": "device",

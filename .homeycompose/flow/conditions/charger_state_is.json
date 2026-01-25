@@ -1,11 +1,11 @@
 {
   "title": { 
-    "en": "The charger status is...", 
-    "sv": "Laddboxens status är..." 
+    "en": "The charger status !{{is|isn't}}...", 
+    "sv": "Laddboxens status !{{är|är inte}}..." 
   },
   "titleFormatted": { 
-    "en": "The charger status is [[status]]", 
-    "sv": "Laddboxens status är [[status]]" 
+    "en": "The charger status !{{is|isn't}} [[status]]", 
+    "sv": "Laddboxens status !{{är|är inte}} [[status]]" 
   },
   "args": [
     { 

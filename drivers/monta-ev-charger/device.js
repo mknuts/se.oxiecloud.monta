@@ -14,7 +14,7 @@ module.exports = class MontaDevice extends Homey.Device {
    * onInit is called when the device is initialized.
    */
   async onInit() {
-        
+   /*     
 
     // Lägg till detta temporärt för att "laga" befintliga enheter
     if (!this.hasCapability('charger_state')) {
@@ -30,7 +30,7 @@ module.exports = class MontaDevice extends Homey.Device {
         this.log('Adding missing capability...');
         await this.addCapability('charger_state').catch(this.error);
     }
-    */
+    
     if (this.hasCapability('charging_mode')) {
         this.log('Removing deprecated capability charging_mode...');
         await this.removeCapability('charging_mode').catch(this.error);
@@ -43,12 +43,11 @@ module.exports = class MontaDevice extends Homey.Device {
         this.log('Removing deprecated capability evcharger_charging_state...');
         await this.removeCapability('evcharger_charging_state').catch(this.error);
     }
-    
+    */
     
     this.setCapabilityListeners();
     await this.setCapabilityValue('evcharger_charging', false);
-    //await this.setCapabilityOptions('measure_monetary', { "units":"DKK" });
-    //await this.setCapabilityValue('charging_state', 'charging');
+    
     this.log('Monta EV Charger device initialized ');
 
     this.monetaryUnit = null; // To be fetched from API
@@ -71,12 +70,12 @@ module.exports = class MontaDevice extends Homey.Device {
     // Register Condition card
     this.homey.flow.getConditionCard('charging_state_is')
       .registerRunListener(async (args) => {
-        // args.device är enheten kortet körs på
-        // args.state är värdet användaren valt i dropdown-menyn
+        // args.device is the device that the card runs on
+        // args.state is the selected drop-down value
         
         const currentState = this.getCapabilityValue('charging_state');
         this.log(`[Condition] Checking if ${currentState} is ${args.state}`);
-        return currentState === args.state; // Returnerar true eller false
+        return currentState === args.state; // Returns true or false
       });
 
     // Register Condition card
@@ -136,6 +135,8 @@ module.exports = class MontaDevice extends Homey.Device {
     }, 10000); 
     // ---------------------------------
     */
+
+
     this.log('Monta EV charger has been initialized');
   }
   
@@ -202,23 +203,23 @@ module.exports = class MontaDevice extends Homey.Device {
 
   async updateChargingState(newStateId) {
     try {
-      // 1. Hitta titeln för token
+      // 1. Find token title
       const cap = this.homey.manifest.capabilities['charging_state'];
       const val = cap.values.find(v => v.id === newStateId);
       const lang = this.homey.i18n.getLanguage();
       const displayTitle = val.title[lang] || val.title['en'] || newStateId;
 
-      // 2. Uppdatera UI
+      // 2. Update UI
       await this.setCapabilityValue('charging_state', newStateId);
 
-      // 3. Trigga "Changed"
+      // 3. Trigger "Changed"
       const triggerChanged = this.homey.flow.getDeviceTriggerCard('charging_state_changed');
       if (triggerChanged) {
-        // Vi skickar 'this' som device-argumentet (det filtret letar efter)
+        // We send 'this' as device-argument (thats what the filter will look for)
         await triggerChanged.trigger(this, { state: displayTitle }, { device: this });
       }
 
-      // 4. Trigga "Is"
+      // 4. Trigger "Is"
       const triggerIs = this.homey.flow.getDeviceTriggerCard('charging_state_is');
       if (triggerIs) {
         await triggerIs.trigger(this, {}, { device: this, state: newStateId });
@@ -231,23 +232,23 @@ module.exports = class MontaDevice extends Homey.Device {
 
   async updateChargerState(newStateId) {
     try {
-      // 1. Hitta titeln för token
+      
       const cap = this.homey.manifest.capabilities['charger_state'];
       const val = cap.values.find(v => v.id === newStateId);
       const lang = this.homey.i18n.getLanguage();
       const displayTitle = val.title[lang] || val.title['en'] || newStateId;
 
-      // 2. Uppdatera UI
+      
       await this.setCapabilityValue('charger_state', newStateId);
 
-      // 3. Trigga "Changed"
+      
       const triggerChanged = this.homey.flow.getDeviceTriggerCard('charger_state_changed');
       if (triggerChanged) {
-        // Vi skickar 'this' som device-argumentet (det filtret letar efter)
+        
         await triggerChanged.trigger(this, { state: displayTitle }, { device: this });
       }
 
-      // 4. Trigga "Is"
+      
       const triggerIs = this.homey.flow.getDeviceTriggerCard('charger_state_is');
       if (triggerIs) {
         await triggerIs.trigger(this, {}, { device: this, state: newStateId });
@@ -263,14 +264,14 @@ module.exports = class MontaDevice extends Homey.Device {
   async fetchMontaData() {
     try {
         const MontaID = this.getData().id;
-        //console.log(`Fetch data for monta charger with ID: ${MontaID}`);
+        //this.log(`Fetch data for monta charger with ID: ${MontaID}`);
         const points = await this.homey.app.api.montaFetch('/charge-points/' + MontaID);
         if (!points) {
                 this.error('No data received from API (chargepoint)');
             return;
         }
 
-        // --- NEW: Set device as available on successful fetch ---
+        // --- Set device as available on successful fetch ---
         await this.setAvailable().catch(this.error);
         // ---------------------------------------------------------------------
 
@@ -342,24 +343,23 @@ module.exports = class MontaDevice extends Homey.Device {
 
         //End calculation of power
         
-        console.log('KWh meter:', points.lastMeterReadingKwh, 'Cabel connected:', points.cablePluggedIn, 'Status:', points.state);
-        console.log('Status previous (or current) charge:', charges.data[0].state, 'ID:', charges.data[0].externalId);
+        this.log('KWh meter:', points.lastMeterReadingKwh, 'Cabel connected:', points.cablePluggedIn, 'Status:', points.state);
+        this.log('Status previous (or current) charge:', charges.data[0].state, 'ID:', charges.data[0].externalId);
        
 
         this.updateCableStatus(points.cablePluggedIn);
         this.setCapabilityValue('measure_monetary', charges.data[0].cost);
         this.setCapabilityValue('meter_lastkwh', charges.data[0].consumedKwh );
 
-        //this.setCapabilityValue('charger_state', charges.data[0].state);
         this.setCapabilityValue('charging_state', charges.data[0].state);
 
-        //this.setCapabilityValue('evcharger_charging_state', points.state);
+        
         this.setCapabilityValue('charger_state', points.state);
         if (points.state === 'busy-charging') {
-          //console.log('Set evcharger_charging to TRUE');
+          //this.log('Set evcharger_charging to TRUE');
           this.setCapabilityValue('evcharger_charging', true)
         } else {
-          //console.log('Set evcharger_charging to FALSE');
+          //this.log('Set evcharger_charging to FALSE');
           this.setCapabilityValue('evcharger_charging', false)
         };
         return points;
@@ -367,12 +367,14 @@ module.exports = class MontaDevice extends Homey.Device {
     } catch (error) {
         console.error('Critical Error during data fetch:', error.message);
 
-        // --- NEW: Set device as unavailable on certain errors ---
+        // --- Set device as unavailable on certain errors ---
         if (error.message.includes('401') || error.message.includes('Unauthorized')) {
             // This sets the device as unavailable with a custom message
-            await this.setUnavailable("Ogiltiga API-uppgifter. Kontrollera App-inställningar.").catch(this.error);
+            const msg = this.homey.__('error.unauthorized')
+            await this.setUnavailable(msg).catch(this.error);
         } else if (error.message.includes('fetch') || error.message.includes('network')) {
-            await this.setUnavailable("Kunde inte nå Monta (Nätverksfel)").catch(this.error);
+            const msg = this.homey.__('error.api_connection_failed');
+            await this.setUnavailable(msg).catch(this.error);
         }
         // --------------------------------------------------
 
@@ -389,7 +391,7 @@ module.exports = class MontaDevice extends Homey.Device {
           // Do the data fetch
           await this.fetchMontaData();
       } catch (error) {
-          console.log('Timer error:', error.message);
+          this.log('Timer error:', error.message);
       } finally {
           // Restart the timer regardless of success or failure
           // We will wait pollFrequency (defined in top of this file, should perhaps be a configuration item) before next run
@@ -414,11 +416,11 @@ module.exports = class MontaDevice extends Homey.Device {
     this.registerCapabilityListener("evcharger_charging", async (value) => {
       return await this.onCapability_EVCHARGER_CHARGING(value);
     });
-    console.log('Registered capability listener for evcharger_charging');
+    this.log('Registered capability listener for evcharger_charging');
   }
 
   async onCapability_EVCHARGER_CHARGING(value) {
-    console.log('Capability evcharger_charging changed to: ' + value);
+    this.log('Capability evcharger_charging changed to: ' + value);
     const MontaID = this.getData().id;
 
     // ---  (GUARD) ---
@@ -427,7 +429,7 @@ module.exports = class MontaDevice extends Homey.Device {
 
     if (value === true && !isDocked) {
         // If user tries to start (true) but cable is not connected (!isDocked)
-        console.log('Aborting: No cable connected.');
+        this.log('Aborting: No cable connected.');
         
         // This error message is shown to the user in the Homey app
         throw new Error(this.homey.__('error.no_cable'));
@@ -435,12 +437,12 @@ module.exports = class MontaDevice extends Homey.Device {
     // ---  (GUARD) ---
     // We need to check if the charger is avaliable before starting charging
     const isAvailable = this.getCapabilityValue('evcharger_charging_state');
-    console.log('Charger availability status:', isAvailable);
+    this.log('Charger availability status:', isAvailable);
     if (value === true && isAvailable !== 'available') {
         // If user tries to start (true) but charger is not available
-        console.log('Aborting: Charger not available.');
+        this.log('Aborting: Charger not available.');
         
-        // Detta felmeddelande visas för användaren i Homey-appen
+        // This error message will be shown to APP users
         throw new Error(this.homey.__('charger_not_available'));
     }
     // ------------------------------
@@ -450,18 +452,18 @@ module.exports = class MontaDevice extends Homey.Device {
         // Code to start/stop charging via Monta API
         
         if (value) {
-            console.log('Start charging via Monta API...');
+            this.log('Start charging via Monta API...');
             // Call Monta API to start charging
           try {
               const startCharge = await this.homey.app.api.montaFetch('/charges', 'POST', { chargePointId: MontaID });
               this.latestChargeID = startCharge.externalId; // Used to stop charging later, Monta needs externalId for this
               await this.setStoreValue('latestChargeID', startCharge.externalId);
-              console.log('Charging started:', startCharge, 'Charge ID', this.latestChargeID);
+              this.log('Charging started:', startCharge, 'Charge ID', this.latestChargeID);
           } catch (error) {
-              console.log('Error when charging was started: ' + error.message);
+              this.log('Error when charging was started: ' + error.message);
           }
         } else {
-            console.log('Stop charging via Monta API...');
+            this.log('Stop charging via Monta API...');
             // Call Monta API to stop charging
 
           try {
@@ -479,11 +481,11 @@ module.exports = class MontaDevice extends Homey.Device {
     
             this.log('Charging stopped and ID cleared from store');
           } catch (error) {
-              console.log('Error when trying to stop charging: ' + error.message);
+              this.log('Error when trying to stop charging: ' + error.message);
           }
         }
     } catch (error) {
-        console.log('Error when chaging evcharger_charging: ' + error.message);
+        this.log('Error when chaging evcharger_charging: ' + error.message);
         throw error;
     }
   } 
