@@ -7,5 +7,5 @@
   "getable": true,
   "setable": false,
   "uiComponent": "sensor",
-  "icon": "/assets/images/connected.svg"
+  "icon": "/assets/images/electric_plug.svg"
 }

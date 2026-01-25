@@ -603,7 +603,7 @@
       "getable": true,
       "setable": true,
       "uiComponent": "sensor",
-      "icon": "/assets/images/connected.svg",
+      "icon": "/assets/images/charger.svg",
       "values": [
         {
           "id": "available",
@@ -727,7 +727,7 @@
       "getable": true,
       "setable": false,
       "uiComponent": "sensor",
-      "icon": "/assets/images/connected.svg"
+      "icon": "/assets/images/electric_plug.svg"
     },
     "meter_lastkwh": {
       "type": "number",

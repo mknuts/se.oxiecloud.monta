@@ -7,7 +7,7 @@
   "getable": true,
   "setable": true,
   "uiComponent": "sensor",
-  "icon": "/assets/images/connected.svg",
+  "icon": "/assets/images/charger.svg",
   "values": [
         { "id": "available", "title": { "en": "Available", "sv": "Ledig" } },
         { "id": "busy", "title": { "en": "Busy", "sv": "Upptagen" } },
