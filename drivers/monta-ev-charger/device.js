@@ -436,14 +436,14 @@ module.exports = class MontaDevice extends Homey.Device {
     }
     // ---  (GUARD) ---
     // We need to check if the charger is avaliable before starting charging
-    const isAvailable = this.getCapabilityValue('evcharger_charging_state');
+    const isAvailable = this.getCapabilityValue('charger_state');
     this.log('Charger availability status:', isAvailable);
     if (value === true && isAvailable !== 'available') {
         // If user tries to start (true) but charger is not available
         this.log('Aborting: Charger not available.');
         
         // This error message will be shown to APP users
-        throw new Error(this.homey.__('charger_not_available'));
+        throw new Error(this.homey.__('error.charger_not_available'));
     }
     // ------------------------------
 
