@@ -1,6 +1,6 @@
 {
   "id": "se.oxiecloud.monta",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "compatibility": ">=12.4.5",
   "sdk": 3,
   "name": {
