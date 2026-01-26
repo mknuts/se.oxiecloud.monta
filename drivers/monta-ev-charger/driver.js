@@ -47,7 +47,8 @@ module.exports = class MontaDriver extends Homey.Driver {
             },
             settings: {
               // We only store the charger ID in device settings
-              charger_id: String(point.id) 
+              charger_id: String(point.id),
+              poll_interval: 30 
             },
           };
         });

@@ -52,5 +52,33 @@
       "id": "add_devices",
       "template": "add_devices"
     }
-  ]
+  ],
+  "settings": [
+  {
+    "type": "group",
+    "label": {
+      "en": "Connection Settings",
+      "sv": "Anslutningsinställningar"
+    },
+    "children": [
+      {
+        "id": "poll_interval",
+        "type": "number",
+        "label": {
+          "en": "Polling Interval (seconds)",
+          "sv": "Polling-intervall (sekunder)"
+        },
+        "hint": {
+          "en": "How often should data be fetched? (Minimum 10s)",
+          "sv": "Hur ofta ska data hämtas? (Minst 10s)"
+        },
+        "default": 30,
+        "attr": {
+          "min": 10,
+          "max": 3600
+        }
+      }
+    ]
+  }
+]
 }

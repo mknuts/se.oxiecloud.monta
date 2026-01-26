@@ -1,7 +1,6 @@
 'use strict';
 
 const Homey = require('homey');
-const pollFrequency = 30000; // 30 seconds;
 
 module.exports = class MontaDevice extends Homey.Device {
 
@@ -56,6 +55,8 @@ module.exports = class MontaDevice extends Homey.Device {
     this.powerHistory = []; // Keep history of power measurements
     this.historyLength = 8; // How many entries to keep (8 x 30s = 4 minutes), adjust as needed
     this.latestChargeID = null;
+    
+
 
     // Register Condition card
     this.homey.flow.getConditionCard('charger_state_is')
@@ -157,6 +158,12 @@ module.exports = class MontaDevice extends Homey.Device {
    * @returns {Promise<string|void>} return a custom message that will be displayed
    */
   async onSettings({ oldSettings, newSettings, changedKeys }) {
+    if (changedKeys.includes('poll_interval')) {
+      this.log(`Polling interval changed from ${oldSettings.poll_interval} to ${newSettings.poll_interval}`);
+      // Restart the polling timer with the new value
+      // Assuming you have a method called startPolling()
+      this.startTimer();
+  }
     this.log('My Monta Charger settings where changed');
   }
 
@@ -174,7 +181,7 @@ module.exports = class MontaDevice extends Homey.Device {
    */
   async onDeleted() {
     this.stopTimer();
-    this.log('Monta Charger with id ' + this.chargePointId +' has been deleted');
+    this.log('Monta Charger with id ' + this.getData().id +' has been deleted');
   }
   
   // Trigger for cable connected/disconnected flow card
@@ -202,6 +209,10 @@ module.exports = class MontaDevice extends Homey.Device {
    */
 
   async updateChargingState(newStateId) {
+    const oldValue = this.getCapabilityValue('charging_state');
+    if (oldValue === newStateId) {
+      return;
+    }
     try {
       // 1. Find token title
       const cap = this.homey.manifest.capabilities['charging_state'];
@@ -231,6 +242,10 @@ module.exports = class MontaDevice extends Homey.Device {
   }
 
   async updateChargerState(newStateId) {
+    const oldValue = this.getCapabilityValue('charger_state');
+    if (oldValue === newStateId) {
+      return;
+    }
     try {
       
       const cap = this.homey.manifest.capabilities['charger_state'];
@@ -351,10 +366,11 @@ module.exports = class MontaDevice extends Homey.Device {
         this.setCapabilityValue('measure_monetary', charges.data[0].cost);
         this.setCapabilityValue('meter_lastkwh', charges.data[0].consumedKwh );
 
-        this.setCapabilityValue('charging_state', charges.data[0].state);
-
+        //this.setCapabilityValue('charging_state', charges.data[0].state);
+        this.updateChargingState(charges.data[0].state);
         
-        this.setCapabilityValue('charger_state', points.state);
+        ;this.setCapabilityValue('charger_state', points.state);
+        this.updateChargerState(points.state);
         if (points.state === 'busy-charging') {
           //this.log('Set evcharger_charging to TRUE');
           this.setCapabilityValue('evcharger_charging', true)
@@ -386,31 +402,54 @@ module.exports = class MontaDevice extends Homey.Device {
     
   }
 
-  async timerCallback() {
-      try {
-          // Do the data fetch
-          await this.fetchMontaData();
-      } catch (error) {
-          this.log('Timer error:', error.message);
-      } finally {
-          // Restart the timer regardless of success or failure
-          // We will wait pollFrequency (defined in top of this file, should perhaps be a configuration item) before next run
-          this.pollTimer = setTimeout(() => this.timerCallback(), pollFrequency);
-      }
-  }
+ /**
+ * Main polling logic.
+ * This function fetches data and schedules the next execution.
+ */
+async timerCallback() {
+    try {
+        // Log the fetch attempt
+        this.log('Fetching Monta data...');
+        await this.fetchMontaData();
+    } catch (error) {
+        this.error('Timer error:', error.message);
+    } finally {
+        // Retrieve the user-defined poll interval (in seconds) from settings.
+        // Fallback to 30 seconds if setting is missing.
+        const pollIntervalSeconds = this.getSetting('poll_interval') || 30;
+        
+        // Convert to milliseconds for setTimeout
+        const pollFrequencyMs = pollIntervalSeconds * 1000;
 
-    
-  startTimer() {
-      // Start first run immediately
-      this.timerCallback();
-  }
+        // Schedule the next run. 
+        // We use setTimeout to ensure we wait the full interval AFTER the previous fetch is finished.
+        this.pollTimer = this.homey.setTimeout(() => this.timerCallback(), pollFrequencyMs);
+    }
+}
 
-  stopTimer() {
-      // Important to clear the timer when device is deleted
-      if (this.pollTimer) {
-          clearTimeout(this.pollTimer);
-      }
-  }
+/**
+ * Starts the polling process.
+ * Clears any existing timer first to prevent duplicate polling chains.
+ */
+startTimer() {
+    this.log('Starting polling timer...');
+    this.stopTimer(); // Always clear existing timers before starting a new one
+    this.timerCallback();
+}
+
+/**
+ * Stops the polling process.
+ * Should be called in onUninit() or when restarting the timer.
+ */
+stopTimer() {
+    if (this.pollTimer) {
+        this.log('Stopping polling timer...');
+        this.homey.clearTimeout(this.pollTimer);
+        this.pollTimer = null;
+    }
+}
+
+
 
   setCapabilityListeners() {
     this.registerCapabilityListener("evcharger_charging", async (value) => {
