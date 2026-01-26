@@ -189,11 +189,11 @@ module.exports = class MontaDevice extends Homey.Device {
       // Fetch old value to see if it has changed
       const oldValue = this.getCapabilityValue('connected');
       
-      // Update capability (for UI/app)
-      await this.setCapabilityValue('connected', isConnected);
 
       // If changed then trigger flow
       if (oldValue !== isConnected) {
+          // Update capability (for UI/app)
+          await this.setCapabilityValue('connected', isConnected);
           const triggerId = isConnected ? 'cable_connected' : 'cable_disconnected';
           
           this.homey.flow.getDeviceTriggerCard(triggerId)
@@ -306,8 +306,10 @@ module.exports = class MontaDevice extends Homey.Device {
         const currentMeter = points.lastMeterReadingKwh; // kWh from API
         const currentTime = Date.now(); // Time in milliseconds
         const isCharging = charges.data[0].state === 'charging';
+        if (this.getCapabilityValue('meter_power') !== points.lastMeterReadingKwh) {
+          await this.setCapabilityValue('meter_power', points.lastMeterReadingKwh);
+        }
         
-        await this.setCapabilityValue('meter_power', points.lastMeterReadingKwh);
         if (this.lastMeterReading !== null && this.lastReadingTime !== null) {
             // Calculate difference in kWh
             const deltaKwh = currentMeter - this.lastMeterReading;
@@ -323,8 +325,10 @@ module.exports = class MontaDevice extends Homey.Device {
             if (!isCharging) {
                 this.powerHistory = []; 
                 this.lastMeterReading = currentMeter;
-                await this.setCapabilityValue('measure_power', 0);
-                this.log('Charging not active , setting power to 0W');
+                if(this.getCapabilityValue('measure_power') !== 0) {
+                  await this.setCapabilityValue('measure_power', 0);
+                  this.log('Charging not active , setting power to 0W');
+                }
             }
             else if (deltaKwh > 0 ) {
                 // Calculate power in kW
@@ -340,8 +344,9 @@ module.exports = class MontaDevice extends Homey.Device {
                 const sum = this.powerHistory.reduce((a, b) => a + b, 0);
                 const avgPowerW = Math.round(sum / this.powerHistory.length);
                 this.log(`Power - Raw: ${rawPowerW}W, Avg: ${avgPowerW}W (History: ${this.powerHistory.length})`);
-      
-                await this.setCapabilityValue('measure_power', avgPowerW);
+                if(this.getCapabilityValue('measure_power') !== avgPowerW) {
+                  await this.setCapabilityValue('measure_power', avgPowerW);
+                }
                 this.lastMeterReading = currentMeter;
                 this.lastReadingTime = currentTime;
             } else {
@@ -360,23 +365,30 @@ module.exports = class MontaDevice extends Homey.Device {
         
         this.log('KWh meter:', points.lastMeterReadingKwh, 'Cabel connected:', points.cablePluggedIn, 'Status:', points.state);
         this.log('Status previous (or current) charge:', charges.data[0].state, 'ID:', charges.data[0].externalId);
-       
 
-        this.updateCableStatus(points.cablePluggedIn);
-        this.setCapabilityValue('measure_monetary', charges.data[0].cost);
-        this.setCapabilityValue('meter_lastkwh', charges.data[0].consumedKwh );
-
-        //this.setCapabilityValue('charging_state', charges.data[0].state);
-        this.updateChargingState(charges.data[0].state);
+        this.updateCableStatus(points.cablePluggedIn); //Capability will be updated in this function
         
-        ;this.setCapabilityValue('charger_state', points.state);
-        this.updateChargerState(points.state);
+        if(this.getCapabilityValue('measure_monetary') !== charges.data[0].cost) {
+          this.setCapabilityValue('measure_monetary', charges.data[0].cost);
+        }
+        if(this.getCapabilityValue('meter_lastkwh') !== charges.data[0].consumedKwh) { 
+          this.setCapabilityValue('meter_lastkwh', charges.data[0].consumedKwh );
+        }
+
+        this.updateChargingState(charges.data[0].state); //Capability update in function
+        
+        this.updateChargerState(points.state); //Capability update in function
+
         if (points.state === 'busy-charging') {
           //this.log('Set evcharger_charging to TRUE');
-          this.setCapabilityValue('evcharger_charging', true)
+          if(this.getCapabilityValue('evcharger_charging') !== true) {
+            this.setCapabilityValue('evcharger_charging', true);
+          }
         } else {
           //this.log('Set evcharger_charging to FALSE');
-          this.setCapabilityValue('evcharger_charging', false)
+          if(this.getCapabilityValue('evcharger_charging') !== false) {
+            this.setCapabilityValue('evcharger_charging', false);
+          }
         };
         return points;
 
@@ -406,7 +418,7 @@ module.exports = class MontaDevice extends Homey.Device {
  * Main polling logic.
  * This function fetches data and schedules the next execution.
  */
-async timerCallback() {
+  async timerCallback() {
     try {
         // Log the fetch attempt
         this.log('Fetching Monta data...');
@@ -425,29 +437,29 @@ async timerCallback() {
         // We use setTimeout to ensure we wait the full interval AFTER the previous fetch is finished.
         this.pollTimer = this.homey.setTimeout(() => this.timerCallback(), pollFrequencyMs);
     }
-}
+  }
 
-/**
- * Starts the polling process.
- * Clears any existing timer first to prevent duplicate polling chains.
- */
-startTimer() {
+  /**
+  * Starts the polling process.
+  * Clears any existing timer first to prevent duplicate polling chains.
+  */
+  startTimer() {
     this.log('Starting polling timer...');
     this.stopTimer(); // Always clear existing timers before starting a new one
     this.timerCallback();
-}
+  }
 
-/**
+  /**
  * Stops the polling process.
  * Should be called in onUninit() or when restarting the timer.
  */
-stopTimer() {
+  stopTimer() {
     if (this.pollTimer) {
         this.log('Stopping polling timer...');
         this.homey.clearTimeout(this.pollTimer);
         this.pollTimer = null;
     }
-}
+  }
 
 
 
