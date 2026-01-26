@@ -14,5 +14,8 @@
   },
   "1.1.0": {
     "en": "Added variable poll frequency"
+  },
+  "1.1.1": {
+    "en": "Only changed capabilities are now updated. Making app much more resposive to real changes."
   }
 }
