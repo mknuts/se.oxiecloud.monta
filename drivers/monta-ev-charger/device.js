@@ -86,10 +86,10 @@ module.exports = class MontaDevice extends Homey.Device {
         //this.log(`[RunListener] State:`, state);
 
 
-        this.log(`[RunListener] Flow Card selection: ${args.state}`);
+        this.log(`[RunListener] Flow Card selection: ${args.status}`);
         this.log(`[RunListener] Actual device state: ${state.status}`);
         
-        const isMatch = (args.state === state.status);
+        const isMatch = (args.status === state.status);
         this.log(`[RunListener] Is match: ${isMatch}`);
         
         return isMatch; // If true, then the flow will be executed
