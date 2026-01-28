@@ -13,18 +13,12 @@ module.exports = class MontaDevice extends Homey.Device {
    * onInit is called when the device is initialized.
    */
   async onInit() {
-   /*     
+   
+   
+    /*     
+    // Just some code needed once, when capabilities was added and removed
+    // Removing and adding the device will actually fix this automaticly 
 
-    // Lägg till detta temporärt för att "laga" befintliga enheter
-    if (!this.hasCapability('charger_state')) {
-        this.log('Adding missing capability...');
-        await this.addCapability('charger_state').catch(this.error);
-    }
-        if (!this.hasCapability('charging_state')) {
-        this.log('Adding missing capability...');
-        await this.addCapability('charging_state').catch(this.error);
-    }
-    /*
         if (!this.hasCapability('charger_state')) {
         this.log('Adding missing capability...');
         await this.addCapability('charger_state').catch(this.error);
@@ -34,21 +28,12 @@ module.exports = class MontaDevice extends Homey.Device {
         this.log('Removing deprecated capability charging_mode...');
         await this.removeCapability('charging_mode').catch(this.error);
     }
-    if (this.hasCapability('ev_charging_state')) {
-        this.log('Removing deprecated capability ev_charging_state...');
-        await this.removeCapability('ev_charging_state').catch(this.error);
-    }
-    if (this.hasCapability('evcharger_charging_state')) {
-        this.log('Removing deprecated capability evcharger_charging_state...');
-        await this.removeCapability('evcharger_charging_state').catch(this.error);
-    }
+
     */
     
     this.setCapabilityListeners();
     await this.setCapabilityValue('evcharger_charging', false);
     
-    this.log('Monta EV Charger device initialized ');
-
     this.monetaryUnit = null; // To be fetched from API
     this.lastMeterReading = null;
     this.lastReadingTime = null;
@@ -92,53 +77,49 @@ module.exports = class MontaDevice extends Homey.Device {
           return isConnected === true; 
       });
 
+    this.homey.flow.getDeviceTriggerCard('charger_state_is')
+      .registerRunListener(async (args, state) => {
+        // args.state from dropdownen in Flow-kortet
+        // state.status from triggerContext 
+        
+        //this.log(`[RunListener] Args:`, args);
+        //this.log(`[RunListener] State:`, state);
+
+
+        this.log(`[RunListener] Flow Card selection: ${args.state}`);
+        this.log(`[RunListener] Actual device state: ${state.status}`);
+        
+        const isMatch = (args.state === state.status);
+        this.log(`[RunListener] Is match: ${isMatch}`);
+        
+        return isMatch; // If true, then the flow will be executed
+      }
+    );
+
+    this.homey.flow.getDeviceTriggerCard('charging_state_is')
+      .registerRunListener(async (args, state) => {
+        // args.state from dropdownen in Flow-kortet
+        // state.status from triggerContext 
+        
+        //this.log(`[RunListener] Args:`, args);
+        //this.log(`[RunListener] State:`, state);
+
+
+        this.log(`[RunListener] Flow Card selection: ${args.state}`);
+        this.log(`[RunListener] Actual device state: ${state.state}`);
+        
+        const isMatch = (args.state === state.state);
+        this.log(`[RunListener] Is match: ${isMatch}`);
+        
+        return isMatch; // If true, then the flow will be executed
+      }
+    );
+
+
     this.startTimer();
-    /*
-    // --- TEMPORARY SIMULATION CODE FOR ChargingState ---
-    // List of all your enum IDs
-    const mockStates = [
-      'reserved', 'starting', 'charging', 
-      'stopping', 'paused', 'scheduled', 
-      'stopped', 'completed'
-    ];
 
-    let stateIndex = 0;
+    this.log('Monta EV Charger device initialized ');
 
-    // Change state every 10 seconds
-    this.homey.setInterval(async () => {
-      const nextState = mockStates[stateIndex];
-      this.log(`[Simulation] Cycling to: ${nextState}`);
-      
-      await this.updateChargingState(nextState);
-
-      // Move to next state, or back to start
-      stateIndex = (stateIndex + 1) % mockStates.length;
-    }, 10000); 
-    // ---------------------------------
-    // --- TEMPORARY SIMULATION CODE FOR ChargerState ---
-    // List of all your enum IDs
-    const mockStates2 = [
-      'available', 'busy', 'busy-charging', 'busy-scheduled',
-      'disconnected', 'error'
-    ];
-
-    let stateIndex2 = 0;
-
-    // Change state every 10 seconds
-    this.homey.setInterval(async () => {
-      const nextState2 = mockStates2[stateIndex2];
-      this.log(`[Simulation] Cycling to: ${nextState2}`);
-      
-      await this.updateChargerState(nextState2);
-
-      // Move to next state, or back to start
-      stateIndex2 = (stateIndex2 + 1) % mockStates2.length;
-    }, 10000); 
-    // ---------------------------------
-    */
-
-
-    this.log('Monta EV charger has been initialized');
   }
   
   
@@ -164,7 +145,7 @@ module.exports = class MontaDevice extends Homey.Device {
       // Assuming you have a method called startPolling()
       this.startTimer();
   }
-    this.log('My Monta Charger settings where changed');
+    this.log('Monta Charger settings where changed');
   }
 
   /**
@@ -173,7 +154,7 @@ module.exports = class MontaDevice extends Homey.Device {
    * @param {string} name The new name
    */
   async onRenamed(name) {
-    this.log('My Monta EV Charger was renamed');
+    this.log('Monta EV Charger was renamed');
   }
 
   /**
@@ -187,8 +168,7 @@ module.exports = class MontaDevice extends Homey.Device {
   // Trigger for cable connected/disconnected flow card
   async updateCableStatus(isConnected) {
       // Fetch old value to see if it has changed
-      const oldValue = this.getCapabilityValue('connected');
-      
+      const oldValue = this.getCapabilityValue('connected');  
 
       // If changed then trigger flow
       if (oldValue !== isConnected) {
@@ -263,10 +243,9 @@ module.exports = class MontaDevice extends Homey.Device {
         await triggerChanged.trigger(this, { state: displayTitle }, { device: this });
       }
 
-      
       const triggerIs = this.homey.flow.getDeviceTriggerCard('charger_state_is');
       if (triggerIs) {
-        await triggerIs.trigger(this, {}, { device: this, state: newStateId });
+        await triggerIs.trigger(this, {}, { device: this, status: newStateId });
       }
 
     } catch (err) {
