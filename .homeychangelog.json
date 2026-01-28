@@ -17,5 +17,8 @@
   },
   "1.1.1": {
     "en": "Only changed capabilities are now updated. Making app much more resposive to real changes."
+  },
+  "1.1.2": {
+    "en": "Bugfixes (missing runlisteners)"
   }
 }
