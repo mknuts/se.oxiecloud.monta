@@ -20,5 +20,8 @@
   },
   "1.1.2": {
     "en": "Bugfixes (missing runlisteners)"
+  },
+  "1.1.3": {
+    "en": "Corrected a typo"
   }
 }
