@@ -38,7 +38,7 @@ module.exports = class MontaDriver extends Homey.Driver {
           throw new Error(this.homey.__('error.no_data_received'));
         }
 
-        // 3. Mappa enheterna. Notera att vi INTE sparar username/password i settings här
+        // Map devices. Note that we dont save username/password here
         return points.data.map(point => {
           return {
             name: point.name || `Monta Charger (${point.id})`,
@@ -46,7 +46,7 @@ module.exports = class MontaDriver extends Homey.Driver {
               id: String(point.id),
             },
             settings: {
-              // We only store the charger ID in device settings
+              // We only store the charger ID in device settings (ID comes from the API and is the uniqe ID for this charger in Montas database)
               charger_id: String(point.id),
               poll_interval: 30 
             },
@@ -58,6 +58,4 @@ module.exports = class MontaDriver extends Homey.Driver {
       }
     });
   }
-
-  
 }

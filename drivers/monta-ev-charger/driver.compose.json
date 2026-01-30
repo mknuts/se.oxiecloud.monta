@@ -69,12 +69,12 @@
           "sv": "Polling-intervall (sekunder)"
         },
         "hint": {
-          "en": "How often should data be fetched? (Minimum 10s)",
-          "sv": "Hur ofta ska data hämtas? (Minst 10s)"
+          "en": "How often should data be fetched? (Minimum 15s)",
+          "sv": "Hur ofta ska data hämtas? (Minst 15s)"
         },
         "default": 30,
         "attr": {
-          "min": 10,
+          "min": 15,
           "max": 3600
         }
       }

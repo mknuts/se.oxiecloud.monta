@@ -11,7 +11,7 @@
     {
       "name": "state",
       "type": "string",
-      "title": { "en": "State", "sv": "Laddningsläge" }
+      "title": { "en": "Charging State", "sv": "Laddningsläge" }
     }
   ]
 }

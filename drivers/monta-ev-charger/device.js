@@ -515,7 +515,7 @@ module.exports = class MontaDevice extends Homey.Device {
           }
         }
     } catch (error) {
-        this.log('Error when chaging evcharger_charging: ' + error.message);
+        this.log('Error when charging evcharger_charging: ' + error.message);
         throw error;
     }
   } 
