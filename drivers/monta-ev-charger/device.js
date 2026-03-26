@@ -208,7 +208,7 @@ module.exports = class MontaDevice extends Homey.Device {
             else if (deltaKwh > 0 ) {
                 const rawPowerKw = deltaKwh / deltaTimeHours;
                 let rawPowerW = Math.round(rawPowerKw * 1000);
-                rawPowerW = Math.min(rawPowerW, 12000); 
+                rawPowerW = Math.min(rawPowerW, 22000); 
                 this.powerHistory.push(rawPowerW);
                 if (this.powerHistory.length > this.historyLength) {
                     this.powerHistory.shift(); 
