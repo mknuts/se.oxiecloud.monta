@@ -501,6 +501,23 @@
                 "min": 15,
                 "max": 3600
               }
+            },
+            {
+              "id": "history_length",
+              "type": "number",
+              "label": {
+                "en": "Power Averaging (samples)",
+                "sv": "Effektutjämning (antal prov)"
+              },
+              "hint": {
+                "en": "Number of readings to average. Higher = smoother graph, lower = faster response.",
+                "sv": "Antal mätningar för medelvärde. Högre = jämnare graf, lägre = snabbare respons."
+              },
+              "default": 8,
+              "attr": {
+                "min": 1,
+                "max": 40
+              }
             }
           ]
         }

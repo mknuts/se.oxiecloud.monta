@@ -5,7 +5,6 @@
   },
   "class": "evcharger",
   "capabilities": [
-  
     "evcharger_charging",
     "charging_state",
     "charger_state",
@@ -14,21 +13,22 @@
     "meter_power",
     "measure_monetary",
     "meter_lastkwh"
-    
   ],
   "capabilitiesOptions": {
     "measure_monetary": {
-      "title": { "en": "Charge cost", "sv": "Laddkostnad" }
-
+      "title": {
+        "en": "Charge cost",
+        "sv": "Laddkostnad"
+      }
     },
-    "meter_power": {"preventInsights": true}
-
+    "meter_power": {
+      "preventInsights": true
+    }
   },
   "energy": {
     "evCharger": true,
     "meterPowerImportedCapability": "meter_power"
   },
-
   "platforms": [
     "local"
   ],
@@ -40,7 +40,6 @@
     "large": "{{driverAssetsPath}}/images/driver_large.png"
   },
   "pair": [
-    
     {
       "id": "list_devices",
       "template": "list_devices",
@@ -54,31 +53,48 @@
     }
   ],
   "settings": [
-  {
-    "type": "group",
-    "label": {
-      "en": "Connection Settings",
-      "sv": "Anslutningsinställningar"
-    },
-    "children": [
-      {
-        "id": "poll_interval",
-        "type": "number",
-        "label": {
-          "en": "Polling Interval (seconds)",
-          "sv": "Polling-intervall (sekunder)"
+    {
+      "type": "group",
+      "label": {
+        "en": "Connection Settings",
+        "sv": "Anslutningsinställningar"
+      },
+      "children": [
+        {
+          "id": "poll_interval",
+          "type": "number",
+          "label": {
+            "en": "Polling Interval (seconds)",
+            "sv": "Polling-intervall (sekunder)"
+          },
+          "hint": {
+            "en": "How often should data be fetched? (Minimum 15s)",
+            "sv": "Hur ofta ska data hämtas? (Minst 15s)"
+          },
+          "default": 30,
+          "attr": {
+            "min": 15,
+            "max": 3600
+          }
         },
-        "hint": {
-          "en": "How often should data be fetched? (Minimum 15s)",
-          "sv": "Hur ofta ska data hämtas? (Minst 15s)"
-        },
-        "default": 30,
-        "attr": {
-          "min": 15,
-          "max": 3600
+        {
+          "id": "history_length",
+          "type": "number",
+          "label": {
+            "en": "Power Averaging (samples)",
+            "sv": "Effektutjämning (antal prov)"
+          },
+          "hint": {
+            "en": "Number of readings to average. Higher = smoother graph, lower = faster response.",
+            "sv": "Antal mätningar för medelvärde. Högre = jämnare graf, lägre = snabbare respons."
+          },
+          "default": 8,
+          "attr": {
+            "min": 1,
+            "max": 40
+          }
         }
-      }
-    ]
-  }
-]
+      ]
+    }
+  ]
 }
