@@ -35,5 +35,8 @@
   },
   "1.1.7": {
     "en": "Updated power calulation formula"
+  },
+  "1.2.0": {
+    "en": "New power calculation algorithm. New setting to specify the length of the running average window (used for power calculation)"
   }
 }
